@@ -36,11 +36,9 @@ serde = { version = "1.0", features = ["derive"] }
 serde_derive = "1.0"
 rmp = "0.8"
 rmp-serde = "1.1"
-rmp-serialize = "0.8"
 rmpv = { version = "1", features = ["with-serde"] }
 base64 = "0.12"
 sha1 = "0.10"
-rustc-serialize = "0.3"
 
 [dev-dependencies]
 actix-web = "4"
