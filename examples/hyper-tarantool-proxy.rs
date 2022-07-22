@@ -1,5 +1,5 @@
 use rusty_tarantool::tarantool::{Client, ClientConfig};
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::convert::Infallible;
 
 use hyper::service::{make_service_fn, service_fn};

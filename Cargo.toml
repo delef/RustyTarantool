@@ -30,19 +30,18 @@ env_logger = "0"
 byteorder = "1.4"
 
 tokio = { version = "1", features = ["full","time"] }
-tokio-util = {version = "0.7", features= ["codec", "time"]}
+tokio-util = {version = "0.7", features = ["codec", "time"]}
 
 serde = { version = "1.0", features = ["derive"] }
-serde_derive = "1.0"
 rmp = "0.8"
 rmp-serde = "1.1"
 rmpv = { version = "1", features = ["with-serde"] }
-base64 = "0.12"
+base64 = "0.13"
 sha1 = "0.10"
 
 [dev-dependencies]
 actix-web = "4"
-actix-rt = "2.7.0"
+actix-rt = "2.7"
 serde_json = "1.0"
 hyper =  { version = "0.14", features = ["full"] }
 url = "2"
