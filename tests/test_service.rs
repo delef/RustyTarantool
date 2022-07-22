@@ -206,17 +206,22 @@ async fn test_sql_bind() -> io::Result<()> {
     let client = init_client();
 
     let response: TarantoolSqlResponse = client
-        .prepare_sql("select *, true, 1.1, :r from TABLE1 where COLUMN1=:col")
+        // Currently not supported (tarantool decimal)
+        // .prepare_sql("select *, true, 1.1, :r from TABLE1 where COLUMN1=:col")
+        .prepare_sql("select *, true, :r from TABLE1 where COLUMN1=:col")
         .bind_named_null("r")?
         .bind_named_ref("col", &1)?
         .execute()
         .await?;
     let meta = response.metadata();
-    let rows: Vec<(u32, String, bool, f32, Option<String>)> = response.decode_result_set()?;
+    // Currently not supported (tarantool decimal)
+    // let rows: Vec<(u32, String, bool, f32, Option<String>)> = response.decode_result_set()?;
+    let rows: Vec<(u32, String, bool, Option<String>)> = response.decode_result_set()?;
 
     println!("resp value={:?}", rows);
     println!("metadata={:?}", meta);
-    assert_eq!(rows, vec![(1, "1".to_string(), true, 1.1, Option::None)]);
+    // assert_eq!(rows, vec![(1, "1".to_string(), true, 1.1, Option::None)]);
+    assert_eq!(rows, vec![(1, "1".to_string(), true, Option::None)]);
     Ok(())
 }
 
@@ -254,7 +259,9 @@ async fn test_untyped_decode_sql_result() -> io::Result<()> {
     let client = init_client();
 
     let response: TarantoolSqlResponse = client
-        .prepare_sql("select *, true, 1.1 from TABLE1 where COLUMN1=?")
+        // Currently not supported (tarantool decimal)
+        // .prepare_sql("select *, true, 1.1 from TABLE1 where COLUMN1=?")
+        .prepare_sql("select *, true from TABLE1 where COLUMN1=?")
         .bind_ref(&1)?
         .execute()
         .await?;
@@ -269,7 +276,7 @@ async fn test_untyped_decode_sql_result() -> io::Result<()> {
             Value::from(1),
             Value::from("1"),
             Value::from(true),
-            Value::from(1.1)
+            // Value::from(1.1)
         ]]
     );
     Ok(())
