@@ -21,19 +21,10 @@ const GREETINGS_HEADER: &str = "Tarantool";
 /// Tokio framed codec for tarantool
 /// use it if you want manually set it on your tokio framed transport
 ///
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct TarantoolCodec {
     is_greetings_received: bool,
     salt: Option<Vec<u8>>,
-}
-
-impl Default for TarantoolCodec {
-    fn default() -> Self {
-        TarantoolCodec {
-            is_greetings_received: false,
-            salt: None,
-        }
-    }
 }
 
 impl Decoder for TarantoolCodec {
@@ -80,17 +71,16 @@ fn parse_response(
 
     match code {
         0 => {
-            Ok((
-                sync,
-                Ok(TarantoolResponse::new_full_response(
-                    code,
-                    response_fields
-                        .remove(&(Key::DATA as u64))
-                        .unwrap_or_default(),
-                    response_fields.remove(&(Key::METADATA as u64)),
-                    response_fields.remove(&(Key::SQL_INFO as u64)), // search_key_in_msgpack_map(r, Key::DATA as u64)?,
-                )),
-            ))
+            let response_data = TarantoolResponse::new_full_response(
+                code,
+                response_fields
+                    .remove(&(Key::DATA as u64))
+                    .unwrap_or_default(),
+                response_fields.remove(&(Key::METADATA as u64)),
+                response_fields.remove(&(Key::SQL_INFO as u64)), // search_key_in_msgpack_map(r, Key::DATA as u64)?,
+            );
+            debug!("response_data: {:?}", response_data);
+            Ok((sync, Ok(response_data)))
         }
         _ => {
             let response_data = TarantoolResponse::new_short_response(

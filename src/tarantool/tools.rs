@@ -1,3 +1,4 @@
+use base64::{engine::general_purpose, Engine as _};
 use byteorder::ReadBytesExt;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use rmp::encode;
@@ -171,15 +172,17 @@ pub fn make_auth_digest(salt_bytes: Vec<u8>, password: &[u8]) -> io::Result<[u8;
     let digest1 = sha1.finalize();
     let mut sha1 = Sha1::new();
 
-    sha1.update(&digest1);
+    sha1.update(digest1);
     let digest2 = sha1.finalize();
 
     let mut sha1 = Sha1::new();
     let salt_str = String::from_utf8(salt_bytes).map_err(map_err_to_io)?;
 
-    let decoded_salt = &base64::decode(&salt_str.trim()).map_err(map_err_to_io)?[..20];
-    sha1.update(&decoded_salt);
-    sha1.update(&digest2);
+    let decoded_salt = &general_purpose::STANDARD
+        .decode(salt_str.trim())
+        .map_err(map_err_to_io)?[..20];
+    sha1.update(decoded_salt);
+    sha1.update(digest2);
     let digest3 = sha1.finalize();
 
     let mut digest4: [u8; 20] = [0; 20];

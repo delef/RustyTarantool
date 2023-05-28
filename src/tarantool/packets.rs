@@ -207,7 +207,7 @@ impl TarantoolResponse {
         T1: Deserialize<'de>,
         T2: Deserialize<'de>,
     {
-        Ok(tools::decode_serde(Cursor::new(self.data))?)
+        tools::decode_serde(Cursor::new(self.data))
     }
 
     ///decode tarantool response to three elements
@@ -222,9 +222,9 @@ impl TarantoolResponse {
     }
 }
 
-impl Into<TarantoolSqlResponse> for TarantoolResponse {
-    fn into(self) -> TarantoolSqlResponse {
-        TarantoolSqlResponse { response: self }
+impl From<TarantoolResponse> for TarantoolSqlResponse {
+    fn from(response: TarantoolResponse) -> Self {
+        TarantoolSqlResponse { response }
     }
 }
 
