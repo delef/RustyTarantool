@@ -120,7 +120,15 @@ impl Encoder<(RequestId, TarantoolRequest)> for TarantoolCodec {
     ) -> Result<(), Self::Error> {
         match command {
             (sync_id, TarantoolRequest::Auth(packet)) => {
-                info!("send auth_packet={:?}", packet);
+                debug!("send auth_packet={:?}", packet);
+
+                if self.salt.is_none() {
+                    Err(io::Error::new(
+                        io::ErrorKind::Other,
+                        "Salt is not received!",
+                    ))?;
+                }
+
                 let digest =
                     make_auth_digest(self.salt.clone().unwrap(), packet.password.as_bytes())?;
 
@@ -135,7 +143,7 @@ impl Encoder<(RequestId, TarantoolRequest)> for TarantoolCodec {
                             Key::TUPLE,
                             Value::Array(vec![
                                 Value::from("chap-sha1"),
-                                Value::from(&digest as &[u8]),
+                                Value::from(digest.as_slice()),
                             ]),
                         ),
                     ],
